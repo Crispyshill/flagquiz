@@ -1,4 +1,4 @@
-package quizMaker;
+package com.example.flagquiz;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Quiz {
 	
 	/** The quiz. */
-	private HashMap<String, ArrayList<QuizItem>> quiz;
+	private HashMap<String, ArrayList<Item>> quiz;
 	
 	/**
 	 * Instantiates a new quiz.
@@ -26,7 +26,7 @@ public class Quiz {
 	 * @param quiz the quiz
 	 */
 	// Overloaded constructor
-	public Quiz(HashMap<String, ArrayList<QuizItem>> quiz) {
+	public Quiz(HashMap<String, ArrayList<Item>> quiz) {
 		this.quiz = quiz;
 	}
 	
@@ -36,7 +36,7 @@ public class Quiz {
 	 * @param quiz the quiz
 	 */
 	// Setters
-	public void setQuiz(HashMap<String, ArrayList<QuizItem>> quiz) {
+	public void setQuiz(HashMap<String, ArrayList<Item>> quiz) {
 		this.quiz = quiz;
 	}
 	
@@ -46,7 +46,8 @@ public class Quiz {
 	 * @return the quiz
 	 */
 	// Getters
-	public HashMap<String, ArrayList<QuizItem>> getQuiz() {
+	public HashMap<String, ArrayList<Item>> getQuiz() {
 		return quiz;
 	}
 }
+

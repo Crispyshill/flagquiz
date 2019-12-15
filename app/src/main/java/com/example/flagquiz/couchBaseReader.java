@@ -3,6 +3,7 @@ package com.example.flagquiz;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
@@ -10,43 +11,38 @@ import com.couchbase.lite.Manager;
 import com.couchbase.lite.android.AndroidContext;
 import com.couchbase.lite.util.ZipUtils;
 
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
 import java.io.IOException;
 
-public class couchBaseReader {
-    private Manager manager = null;
-    private Context myContext;
-   private Database database;
-   AssetManager mgr = null;
+class couchBaseReader {
 
 
-    public couchBaseReader(Context context)  {
-        mgr = context.getResources().getAssets();
-        this.myContext = context;
-        try{
-            manager = new Manager(new AndroidContext(context), Manager.DEFAULT_OPTIONS);
-            database = manager.getExistingDatabase("countrylist");
+    couchBaseReader(Context context) {
+        Database database;
 
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
-
-        if (database == null){
-            try {
-                ZipUtils.unzip(mgr.open("countrylist.zip"),manager.getContext().getFilesDir() );
-                database = manager.getDatabase("countrylist");
-            } catch (CouchbaseLiteException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                System.out.println("FAILED");
-                e.printStackTrace();
+        AssetManager mgr = context.getResources().getAssets();
+        try {
+            Manager manager = new Manager(new AndroidContext(context), Manager.DEFAULT_OPTIONS);
+            String[] directoryListing = mgr.list("");
+            for (String child : directoryListing) {
+                System.out.println("Child = " + child);
+                if (child.toLowerCase().contains("quiz.zip")) {
+                    System.out.println("quiz child: " + child);
+                    database = manager.getExistingDatabase(FilenameUtils.removeExtension(child.toLowerCase()));
+                    if (database == null) {
+                        ZipUtils.unzip(mgr.open(child), manager.getContext().getFilesDir());
+                        System.out.println("Putting the file in " + manager.getContext().getFilesDir());
+                    }
+                }
             }
-        }
+            } catch(CouchbaseLiteException | IOException | NullPointerException e){
+                Log.e("Damn", Log.getStackTraceString(e));
+            }
+
+
+
     }
-
-
 }
+

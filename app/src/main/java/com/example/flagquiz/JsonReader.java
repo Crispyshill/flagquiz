@@ -1,5 +1,7 @@
 
-package quizMaker;
+package com.example.flagquiz;
+
+import android.content.Context;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,23 +21,26 @@ public class JsonReader {
 	
 	/** The json file. */
 	private File jsonFile = new File("src/main/java/jsonFiles/countryList.json");
+	Context myContext;
 
 
 	/**
 	 * Instantiates a new json reader.
 	 */
-	public JsonReader() {
+	public JsonReader(Context myContext) {
+		this.myContext = myContext;
 
 	}
 
-	
+
 	/**
 	 * Instantiates a new json reader.
 	 *
 	 * @param jsonFile the json file
 	 */
-	public JsonReader(File jsonFile) {
+	public JsonReader(File jsonFile, Context myContext) {
 		this.jsonFile = jsonFile;
+		this.myContext = myContext;
 	}
 	
 	
@@ -45,11 +50,21 @@ public class JsonReader {
 	 *
 	 * @return the quiz items
 	 */
-	public Quiz readJson() {
+	public ArrayList<Quiz> readJson() {
 		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<Quiz> quizList = new ArrayList<>();
 		Quiz quiz = new Quiz();
 		try {
-			quiz = mapper.readValue(jsonFile, Quiz.class);
+			File dir = myContext.getFilesDir();
+			File[] dirChildren = dir.listFiles();
+			for (File child : dirChildren) {
+				System.out.println("Checking " + child + " for quizes");
+				if (child.getName().contains("quiz.json")) {
+					System.out.println("reading quiz from : ");
+					System.out.println(myContext.getFilesDir() + "/" + child.getName());
+					quizList.add(mapper.readValue(new File(myContext.getFilesDir() + "/" + child.getName()), Quiz.class));
+				}
+			}
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -57,7 +72,7 @@ public class JsonReader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return quiz;
+		return quizList;
 
 	}
 
@@ -68,9 +83,9 @@ public class JsonReader {
 	 * @param quiz the quiz
 	 */
 	public void printQuizItems(Quiz quiz) {
-		HashMap<String, ArrayList<QuizItem>> quizmap = quiz.getQuiz();
+		HashMap<String, ArrayList<Item>> quizmap = quiz.getQuiz();
 		// Iterates through each map key
-		for (Map.Entry<String, ArrayList<QuizItem>> entry : quizmap.entrySet()) {
+		for (Map.Entry<String, ArrayList<Item>> entry : quizmap.entrySet()) {
 			// Iterates through each ArrayList item
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				System.out.println("{");
